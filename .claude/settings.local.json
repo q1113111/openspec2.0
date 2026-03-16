@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(docker compose up -d)"
+      "Bash(docker compose up -d)",
+      "Bash(docker stop openspec-frontend-1 openspec-backend-1 openspec-mongo-express-1 openspec-mongodb-1)",
+      "Bash(docker rm openspec-frontend-1 openspec-backend-1 openspec-mongo-express-1 openspec-mongodb-1)"
     ]
   }
 }

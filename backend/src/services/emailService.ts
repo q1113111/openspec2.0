@@ -1,14 +1,14 @@
 import nodemailer from 'nodemailer'
 
-const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM } = process.env
+const { SMTP_USER, SMTP_PASS, SMTP_FROM } = process.env
 
-const isSmtpConfigured = SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS
+const isSmtpConfigured = SMTP_USER && SMTP_PASS
 
 const transporter = isSmtpConfigured
   ? nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: Number(SMTP_PORT),
-      secure: Number(SMTP_PORT) === 465,
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       auth: {
         user: SMTP_USER,
         pass: SMTP_PASS,

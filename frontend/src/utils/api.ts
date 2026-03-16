@@ -1,8 +1,20 @@
 import axios, { type AxiosRequestConfig } from 'axios'
 
+export const TOKEN_KEYS = {
+  access: 'accessToken',
+  refresh: 'refreshToken',
+}
+
 const api = axios.create({
   baseURL: '/api',
-  withCredentials: true,
+})
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem(TOKEN_KEYS.access)
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })
 
 let isRefreshing = false
@@ -46,11 +58,16 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
-        await axios.post('/api/auth/refresh', {}, { withCredentials: true })
+        const refreshToken = localStorage.getItem(TOKEN_KEYS.refresh)
+        const { data } = await axios.post('/api/auth/refresh', { refreshToken })
+        localStorage.setItem(TOKEN_KEYS.access, data.accessToken)
+        localStorage.setItem(TOKEN_KEYS.refresh, data.refreshToken)
         processQueue(null)
         return api(originalRequest)
       } catch (refreshError) {
         processQueue(refreshError)
+        localStorage.removeItem(TOKEN_KEYS.access)
+        localStorage.removeItem(TOKEN_KEYS.refresh)
         if (window.location.pathname !== '/login') {
           window.location.href = '/login'
         }

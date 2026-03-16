@@ -21,7 +21,26 @@ import type { LeaveType } from '../models/LeaveRequest'
 
 const router = Router()
 
-// ── GET /api/leave/balances ───────────────────────────────────────────────
+/**
+ * @openapi
+ * /api/leave/balances:
+ *   get:
+ *     tags:
+ *       - Leave
+ *     summary: 取得當前使用者假別餘額
+ *     description: 依台灣勞基法年資自動計算年假，回傳所有假別今年可用天數
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 假別餘額列表
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/LeaveBalance'
+ */
 router.get('/balances', authMiddleware, async (req: Request, res: Response) => {
   try {
     const userId = req.user.userId
@@ -56,7 +75,103 @@ router.get('/balances', authMiddleware, async (req: Request, res: Response) => {
   }
 })
 
-// ── POST /api/leave/requests ──────────────────────────────────────────────
+/**
+ * @openapi
+ * /api/leave/requests:
+ *   post:
+ *     tags:
+ *       - Leave
+ *     summary: 提交請假申請
+ *     description: 員工提交後狀態為 pending，系統通知主管審核
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - type
+ *               - startDate
+ *               - endDate
+ *               - reason
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [annual, sick, personal, compensatory, marriage, bereavement, maternity, paternity, official]
+ *                 example: annual
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: '2026-04-01'
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: '2026-04-03'
+ *               reason:
+ *                 type: string
+ *                 example: 家庭旅遊
+ *               proxyUserId:
+ *                 type: string
+ *                 description: 代理人 userId
+ *               totalHours:
+ *                 type: number
+ *                 description: 補休小時數（僅 compensatory 假別需要）
+ *     responses:
+ *       201:
+ *         description: 申請成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LeaveRequest'
+ *       400:
+ *         description: 假別餘額不足或必填欄位缺少
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *   get:
+ *     tags:
+ *       - Leave
+ *     summary: 查詢請假申請列表
+ *     description: 員工只能查自己；admin / hr 可依 userId / status / type 篩選
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [pending, supervisor_approved, approved, rejected, cancelled]
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *     responses:
+ *       200:
+ *         description: 請假申請列表
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/LeaveRequest'
+ */
 router.post('/requests', authMiddleware, async (req: Request, res: Response) => {
   try {
     const userId = req.user.userId
@@ -153,7 +268,28 @@ router.get('/requests', authMiddleware, async (req: Request, res: Response) => {
   }
 })
 
-// ── GET /api/leave/requests/pending ──────────────────────────────────────
+/**
+ * @openapi
+ * /api/leave/requests/pending:
+ *   get:
+ *     tags:
+ *       - Leave
+ *     summary: 取得待審核請假申請
+ *     description: |
+ *       - HR / Admin：回傳 supervisor_approved 狀態的申請（等待 HR 終審）
+ *       - 主管：回傳其下屬 pending 狀態的申請（等待主管初審）
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 待審核申請列表
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/LeaveRequest'
+ */
 router.get('/requests/pending', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { role, userId: currentUserId } = req.user
@@ -183,7 +319,52 @@ router.get('/requests/pending', authMiddleware, async (req: Request, res: Respon
   }
 })
 
-// ── DELETE /api/leave/requests/:id ───────────────────────────────────────
+/**
+ * @openapi
+ * /api/leave/requests/{id}:
+ *   delete:
+ *     tags:
+ *       - Leave
+ *     summary: 取消請假申請
+ *     description: 只有申請人本人（或 admin）可取消，且只有 pending 狀態可取消
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: 取消成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Leave request cancelled
+ *       400:
+ *         description: 只有 pending 狀態可取消
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: 非申請人且非 admin
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: 申請不存在
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.delete('/requests/:id', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { userId: currentUserId, role } = req.user
@@ -208,7 +389,54 @@ router.delete('/requests/:id', authMiddleware, async (req: Request, res: Respons
   }
 })
 
-// ── POST /api/leave/requests/:id/approve ─────────────────────────────────
+/**
+ * @openapi
+ * /api/leave/requests/{id}/approve:
+ *   post:
+ *     tags:
+ *       - Leave
+ *     summary: 審核通過請假申請
+ *     description: |
+ *       **兩層審核流程：**
+ *       1. 主管（supervisor）：pending → supervisor_approved
+ *       2. HR / Admin：supervisor_approved → approved（並扣除假別餘額）
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               comment:
+ *                 type: string
+ *                 example: 同意
+ *     responses:
+ *       200:
+ *         description: 審核通過
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LeaveRequest'
+ *       400:
+ *         description: 狀態不符合審核條件
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: 非申請人主管或權限不足
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/requests/:id/approve', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { userId: currentUserId, role } = req.user
@@ -298,7 +526,54 @@ router.post('/requests/:id/approve', authMiddleware, async (req: Request, res: R
   }
 })
 
-// ── POST /api/leave/requests/:id/reject ──────────────────────────────────
+/**
+ * @openapi
+ * /api/leave/requests/{id}/reject:
+ *   post:
+ *     tags:
+ *       - Leave
+ *     summary: 駁回請假申請
+ *     description: 主管或 HR / Admin 可駁回 pending 或 supervisor_approved 的申請，需填寫原因
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - comment
+ *             properties:
+ *               comment:
+ *                 type: string
+ *                 example: 人力不足，請擇期申請
+ *     responses:
+ *       200:
+ *         description: 駁回成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LeaveRequest'
+ *       400:
+ *         description: 缺少原因或狀態不可駁回
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: 員工無審核權限
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/requests/:id/reject', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { userId: currentUserId, role } = req.user

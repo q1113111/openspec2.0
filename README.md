@@ -58,6 +58,7 @@ docker compose logs -f frontend
 |------|-----|------|
 | 前端介面 | http://localhost:5173 | 主要使用介面 |
 | 後端 API | http://localhost:3000/api | RESTful API |
+| Swagger UI | http://localhost:3000/api-docs | API 文件（需設定 `ENABLE_SWAGGER=true`） |
 | Mongo Express | http://localhost:8081 | MongoDB 管理介面 |
 
 ### Mongo Express 登入

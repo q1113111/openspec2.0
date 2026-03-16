@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import api from '@/utils/api'
+import api, { TOKEN_KEYS } from '@/utils/api'
 import type { UserRole } from '@/types'
 
 interface AuthUser {
@@ -19,6 +19,8 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading.value = true
     try {
       const { data } = await api.post('/auth/login', { email, password })
+      localStorage.setItem(TOKEN_KEYS.access, data.accessToken)
+      localStorage.setItem(TOKEN_KEYS.refresh, data.refreshToken)
       user.value = data.user
     } finally {
       isLoading.value = false
@@ -28,10 +30,13 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout() {
     isLoading.value = true
     try {
-      await api.post('/auth/logout')
+      const refreshToken = localStorage.getItem(TOKEN_KEYS.refresh)
+      await api.post('/auth/logout', { refreshToken })
     } catch {
       // ignore logout errors
     } finally {
+      localStorage.removeItem(TOKEN_KEYS.access)
+      localStorage.removeItem(TOKEN_KEYS.refresh)
       user.value = null
       isLoading.value = false
     }

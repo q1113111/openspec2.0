@@ -1,8 +1,9 @@
 import 'dotenv/config'
 import express from 'express'
-import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import { connectDatabase } from './config/database'
+import { swaggerSpec } from './config/swagger'
+import swaggerUi from 'swagger-ui-express'
 
 // Routes
 import authRoutes from './routes/auth'
@@ -22,7 +23,6 @@ app.use(
   }),
 )
 app.use(express.json())
-app.use(cookieParser())
 
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
@@ -32,6 +32,15 @@ app.use('/api/leave', leaveRoutes)
 app.use('/api/overtime', overtimeRoutes)
 
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }))
+
+if (process.env.ENABLE_SWAGGER === 'true') {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+  app.get('/api-docs.json', (_req, res) => {
+    res.setHeader('Content-Type', 'application/json')
+    res.send(swaggerSpec)
+  })
+  console.log('Swagger UI available at http://localhost:3000/api-docs')
+}
 
 connectDatabase()
   .then(() => {

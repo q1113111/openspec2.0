@@ -9,21 +9,7 @@ import { authMiddleware, JwtPayload } from '../middleware/auth'
 const router = Router()
 
 const ACCESS_SECRET = () => process.env.JWT_ACCESS_SECRET || 'access_secret'
-const REFRESH_SECRET = () => process.env.JWT_REFRESH_SECRET || 'refresh_secret'
 
-const COOKIE_OPTS_ACCESS = {
-  httpOnly: true,
-  sameSite: 'strict' as const,
-  secure: process.env.NODE_ENV === 'production',
-  maxAge: 60 * 60 * 1000, // 1h
-}
-
-const COOKIE_OPTS_REFRESH = {
-  httpOnly: true,
-  sameSite: 'strict' as const,
-  secure: process.env.NODE_ENV === 'production',
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
-}
 
 function generateAccessToken(payload: JwtPayload): string {
   return jwt.sign(payload, ACCESS_SECRET(), { expiresIn: '1h' })
@@ -36,7 +22,69 @@ async function generateRefreshToken(userId: string): Promise<string> {
   return token
 }
 
-// POST /api/auth/login
+/**
+ * @openapi
+ * /api/auth/login:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: 使用者登入
+ *     description: 驗證帳號密碼，成功後回傳 accessToken 與 refreshToken
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: admin@company.com
+ *               password:
+ *                 type: string
+ *                 example: Admin@1234
+ *     responses:
+ *       200:
+ *         description: 登入成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                 refreshToken:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     role:
+ *                       type: string
+ *                     mustChangePassword:
+ *                       type: boolean
+ *       400:
+ *         description: 缺少 email 或 password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: 帳號或密碼錯誤
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/login', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body
@@ -63,42 +111,108 @@ router.post('/login', async (req: Request, res: Response) => {
     const accessToken = generateAccessToken(payload)
     const refreshToken = await generateRefreshToken(user._id.toString())
 
-    res
-      .cookie('accessToken', accessToken, COOKIE_OPTS_ACCESS)
-      .cookie('refreshToken', refreshToken, COOKIE_OPTS_REFRESH)
-      .json({
-        user: {
-          _id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          mustChangePassword: user.mustChangePassword,
-        },
-      })
+    res.json({
+      accessToken,
+      refreshToken,
+      user: {
+        _id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        mustChangePassword: user.mustChangePassword,
+      },
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Internal server error' })
   }
 })
 
-// POST /api/auth/logout
+/**
+ * @openapi
+ * /api/auth/logout:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: 登出
+ *     description: 撤銷 refreshToken
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 登出成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Logged out
+ */
 router.post('/logout', async (req: Request, res: Response) => {
   try {
-    const token = req.cookies?.refreshToken
+    const token = req.body?.refreshToken
     if (token) {
       await RefreshToken.findOneAndUpdate({ token }, { isRevoked: true })
     }
-    res.clearCookie('accessToken').clearCookie('refreshToken').json({ message: 'Logged out' })
+    res.json({ message: 'Logged out' })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Internal server error' })
   }
 })
 
-// POST /api/auth/refresh
+/**
+ * @openapi
+ * /api/auth/refresh:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: 刷新 Access Token
+ *     description: 使用 refreshToken 輪轉並產生新的 accessToken 與 refreshToken
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Token 已更新
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                 refreshToken:
+ *                   type: string
+ *       401:
+ *         description: refreshToken 無效或已過期
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/refresh', async (req: Request, res: Response) => {
   try {
-    const token = req.cookies?.refreshToken
+    const token = req.body?.refreshToken
     if (!token) {
       return res.status(401).json({ message: 'No refresh token' })
     }
@@ -125,17 +239,60 @@ router.post('/refresh', async (req: Request, res: Response) => {
     }
     const accessToken = generateAccessToken(payload)
 
-    res
-      .cookie('accessToken', accessToken, COOKIE_OPTS_ACCESS)
-      .cookie('refreshToken', newRefreshToken, COOKIE_OPTS_REFRESH)
-      .json({ message: 'Token refreshed' })
+    res.json({ accessToken, refreshToken: newRefreshToken })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Internal server error' })
   }
 })
 
-// PUT /api/auth/change-password
+/**
+ * @openapi
+ * /api/auth/change-password:
+ *   put:
+ *     tags:
+ *       - Auth
+ *     summary: 變更密碼
+ *     description: 登入用戶變更自己的密碼，成功後清除 mustChangePassword 旗標
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - newPassword
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 example: NewPass@123
+ *     responses:
+ *       200:
+ *         description: 密碼變更成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Password changed successfully
+ *       400:
+ *         description: 密碼長度不足
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: 未登入
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.put('/change-password', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { newPassword } = req.body

@@ -4,7 +4,71 @@ import { authMiddleware, requireRole } from '../middleware/auth'
 
 const router = Router()
 
-// ── GET /api/work-schedule ────────────────────────────────────────────────
+/**
+ * @openapi
+ * /api/work-schedule:
+ *   get:
+ *     tags:
+ *       - WorkSchedule
+ *     summary: 取得工作排班設定
+ *     description: 回傳全系統共用的工作時間設定（如無設定則自動建立預設值）
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 工作排班設定
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/WorkSchedule'
+ *   put:
+ *     tags:
+ *       - WorkSchedule
+ *     summary: 更新工作排班設定
+ *     description: 僅 admin 可操作
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               coreStart:
+ *                 type: string
+ *                 example: '09:00'
+ *               coreEnd:
+ *                 type: string
+ *                 example: '18:00'
+ *               dailyHours:
+ *                 type: number
+ *                 example: 8
+ *               flexStart:
+ *                 type: string
+ *                 example: '07:00'
+ *               flexEnd:
+ *                 type: string
+ *                 example: '10:00'
+ *               workDays:
+ *                 type: array
+ *                 items:
+ *                   type: number
+ *                 example: [1, 2, 3, 4, 5]
+ *                 description: '0=週日, 1=週一, ..., 6=週六'
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/WorkSchedule'
+ *       403:
+ *         description: 非 admin
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.get('/', authMiddleware, async (_req: Request, res: Response) => {
   try {
     let schedule = await WorkSchedule.findOne().lean()

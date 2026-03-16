@@ -26,6 +26,7 @@ docker compose down              # 停止所有服務
 服務地址：
 - 前端: http://localhost:5173
 - 後端 API: http://localhost:3000/api
+- Swagger UI: http://localhost:3000/api-docs（需 `.env` 中設定 `ENABLE_SWAGGER=true`）
 - Mongo Express: http://localhost:8081
 
 預設帳號: `admin@company.com` / `Admin@1234`

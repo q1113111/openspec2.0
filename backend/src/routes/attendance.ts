@@ -15,7 +15,30 @@ function todayString(): string {
   return `${y}-${m}-${d}`
 }
 
-// ── POST /api/attendance/clock-in ─────────────────────────────────────────
+/**
+ * @openapi
+ * /api/attendance/clock-in:
+ *   post:
+ *     tags:
+ *       - Attendance
+ *     summary: 上班打卡
+ *     description: 記錄當天上班時間，依 WorkSchedule 判斷是否遲到
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       201:
+ *         description: 打卡成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Attendance'
+ *       409:
+ *         description: 今天已打過上班卡
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/clock-in', authMiddleware, async (req: Request, res: Response) => {
   try {
     const userId = req.user.userId
@@ -52,7 +75,36 @@ router.post('/clock-in', authMiddleware, async (req: Request, res: Response) => 
   }
 })
 
-// ── POST /api/attendance/clock-out ────────────────────────────────────────
+/**
+ * @openapi
+ * /api/attendance/clock-out:
+ *   post:
+ *     tags:
+ *       - Attendance
+ *     summary: 下班打卡
+ *     description: 記錄當天下班時間，計算工時，依 WorkSchedule 判斷是否早退
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 打卡成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Attendance'
+ *       400:
+ *         description: 今天尚未打上班卡
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: 今天已打過下班卡
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/clock-out', authMiddleware, async (req: Request, res: Response) => {
   try {
     const userId = req.user.userId
@@ -91,7 +143,25 @@ router.post('/clock-out', authMiddleware, async (req: Request, res: Response) =>
   }
 })
 
-// ── GET /api/attendance/today ─────────────────────────────────────────────
+/**
+ * @openapi
+ * /api/attendance/today:
+ *   get:
+ *     tags:
+ *       - Attendance
+ *     summary: 取得今日打卡紀錄
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 今日打卡紀錄（無紀錄時回傳 null）
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/Attendance'
+ *                 - type: 'null'
+ */
 router.get('/today', authMiddleware, async (req: Request, res: Response) => {
   try {
     const userId = req.user.userId
@@ -104,7 +174,49 @@ router.get('/today', authMiddleware, async (req: Request, res: Response) => {
   }
 })
 
-// ── GET /api/attendance ───────────────────────────────────────────────────
+/**
+ * @openapi
+ * /api/attendance:
+ *   get:
+ *     tags:
+ *       - Attendance
+ *     summary: 查詢出勤紀錄
+ *     description: 員工只能查自己；admin / hr 可依 userId 或 department 篩選
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         description: 篩選特定使用者（admin/hr）
+ *       - in: query
+ *         name: department
+ *         schema:
+ *           type: string
+ *         description: 篩選部門（admin/hr）
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: 開始日期（YYYY-MM-DD）
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: 結束日期（YYYY-MM-DD）
+ *     responses:
+ *       200:
+ *         description: 出勤紀錄列表
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Attendance'
+ */
 router.get('/', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { role, userId: currentUserId } = req.user

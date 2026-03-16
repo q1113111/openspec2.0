@@ -13,7 +13,95 @@ import {
 
 const router = Router()
 
-// ── POST /api/overtime/requests ───────────────────────────────────────────
+/**
+ * @openapi
+ * /api/overtime/requests:
+ *   post:
+ *     tags:
+ *       - Overtime
+ *     summary: 提交加班申請
+ *     description: 員工提交後狀態為 pending，系統通知主管審核
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - date
+ *               - startTime
+ *               - endTime
+ *               - hours
+ *               - reason
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 example: '2026-03-20'
+ *               startTime:
+ *                 type: string
+ *                 example: '18:00'
+ *               endTime:
+ *                 type: string
+ *                 example: '21:00'
+ *               hours:
+ *                 type: number
+ *                 example: 3
+ *               reason:
+ *                 type: string
+ *                 example: 專案上線準備
+ *     responses:
+ *       201:
+ *         description: 申請成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OvertimeRequest'
+ *       400:
+ *         description: 必填欄位缺少
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *   get:
+ *     tags:
+ *       - Overtime
+ *     summary: 查詢加班申請列表
+ *     description: 員工只能查自己；admin / hr 可依 userId / status 篩選
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [pending, supervisor_approved, approved, rejected]
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *     responses:
+ *       200:
+ *         description: 加班申請列表
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/OvertimeRequest'
+ */
 router.post('/requests', authMiddleware, async (req: Request, res: Response) => {
   try {
     const userId = req.user.userId
@@ -89,7 +177,28 @@ router.get('/requests', authMiddleware, async (req: Request, res: Response) => {
   }
 })
 
-// ── GET /api/overtime/requests/pending ────────────────────────────────────
+/**
+ * @openapi
+ * /api/overtime/requests/pending:
+ *   get:
+ *     tags:
+ *       - Overtime
+ *     summary: 取得待審核加班申請
+ *     description: |
+ *       - HR / Admin：回傳 supervisor_approved 狀態
+ *       - 主管：回傳其下屬 pending 狀態
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 待審核申請列表
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/OvertimeRequest'
+ */
 router.get('/requests/pending', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { role, userId: currentUserId } = req.user
@@ -116,7 +225,54 @@ router.get('/requests/pending', authMiddleware, async (req: Request, res: Respon
   }
 })
 
-// ── POST /api/overtime/requests/:id/approve ───────────────────────────────
+/**
+ * @openapi
+ * /api/overtime/requests/{id}/approve:
+ *   post:
+ *     tags:
+ *       - Overtime
+ *     summary: 審核通過加班申請
+ *     description: |
+ *       **兩層審核流程：**
+ *       1. 主管：pending → supervisor_approved
+ *       2. HR / Admin：supervisor_approved → approved（若員工無加班費則自動累計補休時數）
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               comment:
+ *                 type: string
+ *                 example: 同意
+ *     responses:
+ *       200:
+ *         description: 審核通過
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OvertimeRequest'
+ *       400:
+ *         description: 狀態不符合審核條件
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: 非申請人主管或權限不足
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/requests/:id/approve', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { userId: currentUserId, role } = req.user
@@ -185,7 +341,54 @@ router.post('/requests/:id/approve', authMiddleware, async (req: Request, res: R
   }
 })
 
-// ── POST /api/overtime/requests/:id/reject ────────────────────────────────
+/**
+ * @openapi
+ * /api/overtime/requests/{id}/reject:
+ *   post:
+ *     tags:
+ *       - Overtime
+ *     summary: 駁回加班申請
+ *     description: 主管或 HR / Admin 可駁回，需填寫原因
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - comment
+ *             properties:
+ *               comment:
+ *                 type: string
+ *                 example: 業務量不符合加班標準
+ *     responses:
+ *       200:
+ *         description: 駁回成功
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OvertimeRequest'
+ *       400:
+ *         description: 缺少原因或狀態不可駁回
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: 員工無審核權限
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/requests/:id/reject', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { userId: currentUserId, role } = req.user

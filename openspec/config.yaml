@@ -1,0 +1,58 @@
+schema: spec-driven
+
+context: |
+  ## 專案
+  出缺勤管理系統（Attendance Management System）
+  符合台灣勞基法的員工出缺勤、請假、加班管理平台。
+
+  ## 技術棧
+  - 前端：Vue 3 + TypeScript + Pinia + Vue Router + UnoCSS + Vite
+  - 後端：Node.js + Express.js + TypeScript
+  - 資料庫：MongoDB + Mongoose
+  - 認證：JWT（httpOnly Cookie，Access + Refresh Token 雙層）
+  - 容器：Docker Compose（frontend, backend, mongodb, mongo-express）
+
+  ## 角色與權限
+  - admin：系統管理員，可管理所有資料
+  - hr：人力資源，可審核第二層請假/加班
+  - employee：一般員工
+  - 主管透過 User.supervisorId 標記，負責第一層審核
+
+  ## 重要業務規則
+  - 請假/加班需兩層審核：主管（supervisor_approved）→ HR/Admin（approved）
+  - 年假依台灣勞基法年資自動計算（leaveService.ts）
+  - 工作日計算依 WorkSchedule.workDays 排除非工作日
+  - 新帳號 mustChangePassword=true，首次登入強制改密碼
+
+  ## 代碼規範
+  - 前後端均使用 TypeScript 嚴格模式（strict: true）
+  - Vue 3 Composition API + <script setup> 語法
+  - 使用 ESLint + Prettier 格式化
+  - API 路徑統一前綴 /api，一個 routes 文件對應一個資源
+  - 前端類型定義集中在 frontend/src/types/index.ts
+  - 中文標籤常量集中在 types/index.ts（LEAVE_TYPE_LABELS 等）
+  - Commit 使用 Conventional Commits 格式
+
+  ## 目錄結構慣例
+  - backend/src/routes/ — API 路由（薄控制器，業務邏輯在 services/）
+  - backend/src/services/ — 業務邏輯層
+  - backend/src/models/ — Mongoose Schema
+  - frontend/src/pages/ — 頁面級組件（含 admin/, leave/, overtime/ 子目錄）
+  - frontend/src/components/ — 共用 UI 組件
+
+rules:
+  proposal:
+    - 說明功能目標與業務價值
+    - 列出 Non-goals（明確不做的事）
+    - 標注影響的角色（admin / hr / employee）
+  design:
+    - 涵蓋前端頁面/組件變更和後端 API 變更
+    - 說明資料模型異動（若有新增或修改 Mongoose Schema）
+    - 列出權限影響
+  specs:
+    - 每個 API 端點需列出：方法、路徑、權限、請求/回應格式
+    - 前端規格需說明狀態管理（Pinia store）和路由守衛影響
+  tasks:
+    - 每個 task 拆分至可獨立完成（建議 1-3 小時）
+    - 後端 task 與前端 task 分開列出
+    - 包含 seed data 或 migration 需求（若有）

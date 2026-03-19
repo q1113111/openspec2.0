@@ -1,9 +1,9 @@
 <template>
-  <div class="flex h-screen bg-gray-50 overflow-hidden">
+  <div class="flex h-screen overflow-hidden bg-tattoo-black">
     <AppSidebar />
     <div class="flex-1 flex flex-col overflow-hidden">
       <AppHeader />
-      <main class="flex-1 overflow-y-auto p-6">
+      <main class="flex-1 overflow-y-auto p-7 bg-tattoo-black">
         <RouterView />
       </main>
     </div>

@@ -1,79 +1,74 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-gray-900">假別額度管理</h2>
-      <div class="flex items-center gap-3">
-        <select
-          v-model="selectedUserId"
-          class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
-          @change="fetchBalances"
-        >
-          <option value="">選擇員工</option>
-          <option v-for="u in userStore.users" :key="u._id" :value="u._id">
-            {{ u.name }}
-          </option>
-        </select>
-      </div>
+      <h2 class="tattoo-heading text-xl">✦ 假別額度管理</h2>
+      <select
+        v-model="selectedUserId"
+        class="tattoo-select w-48"
+        @change="fetchBalances"
+      >
+        <option value="">選擇員工</option>
+        <option v-for="u in userStore.users" :key="u._id" :value="u._id">
+          {{ u.name }}
+        </option>
+      </select>
     </div>
+    <TattooDivider />
 
     <div
       v-if="!selectedUserId"
-      class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-500 text-sm"
+      class="tattoo-card p-12 text-center font-cinzel text-tattoo-warm text-sm"
     >
       請選擇員工以查看假別額度
     </div>
 
     <div
       v-else-if="loading"
-      class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-500 text-sm"
+      class="tattoo-card p-12 text-center font-cinzel text-tattoo-warm text-sm"
     >
       載入中...
     </div>
 
-    <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-        <span class="text-sm font-medium text-gray-700">{{ selectedUserName }} 的假別餘額</span>
+    <div v-else class="tattoo-card p-0 overflow-hidden">
+      <div class="px-4 py-3 flex items-center justify-between" style="border-bottom: 1px solid #3a3530;">
+        <span class="tattoo-subheading text-sm">{{ selectedUserName }} 的假別餘額</span>
         <button
           v-if="edited"
           :disabled="saving"
-          class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50"
+          class="tattoo-btn-primary py-1.5 px-4 text-xs"
           @click="handleSave"
         >
-          {{ saving ? '儲存中...' : '儲存變更' }}
+          {{ saving ? '儲存中...' : '✦ 儲存變更' }}
         </button>
       </div>
       <table class="w-full text-sm">
         <thead>
-          <tr class="bg-gray-50 border-b border-gray-200">
-            <th class="text-left px-4 py-3 font-medium text-gray-600">假別</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">總額度（天）</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">已使用</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">剩餘</th>
+          <tr>
+            <th class="tattoo-table-header text-left">假別</th>
+            <th class="tattoo-table-header text-left">總額度（天）</th>
+            <th class="tattoo-table-header text-left">已使用</th>
+            <th class="tattoo-table-header text-left">剩餘</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="balance in editableBalances"
-            :key="balance.type"
-            class="border-b border-gray-100"
-          >
-            <td class="px-4 py-3 font-medium text-gray-900">
+          <tr v-for="balance in editableBalances" :key="balance.type" class="tattoo-table-row">
+            <td class="tattoo-table-cell font-cinzel text-tattoo-gold">
               {{ LEAVE_TYPE_LABELS[balance.type] }}
             </td>
-            <td class="px-4 py-3">
+            <td class="tattoo-table-cell">
               <input
                 v-model.number="balance.total"
                 type="number"
                 min="0"
                 step="0.5"
-                class="w-24 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="tattoo-input w-24 py-1"
                 @input="edited = true"
               />
             </td>
-            <td class="px-4 py-3 text-gray-600">{{ balance.used }}</td>
+            <td class="tattoo-table-cell text-tattoo-cream">{{ balance.used }}</td>
             <td
-              class="px-4 py-3 font-medium"
-              :class="balance.remaining <= 0 ? 'text-red-600' : 'text-green-600'"
+              class="tattoo-table-cell font-cinzel-decorative text-lg font-bold"
+              :class="balance.remaining <= 0 ? 'text-tattoo-red' : 'text-tattoo-gold'"
             >
               {{ balance.total - balance.used }}
             </td>
@@ -90,6 +85,7 @@
   import type { LeaveBalance, LeaveType } from '@/types'
   import { LEAVE_TYPE_LABELS } from '@/types'
   import { useUserStore } from '@/stores/user'
+  import TattooDivider from '@/components/tattoo/TattooDivider.vue'
 
   const userStore = useUserStore()
   const selectedUserId = ref('')

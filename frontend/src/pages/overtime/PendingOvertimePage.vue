@@ -1,54 +1,54 @@
 <template>
   <div class="space-y-4">
-    <h2 class="text-lg font-semibold text-gray-900">待審加班</h2>
+    <h2 class="tattoo-heading text-xl">✦ 待審加班</h2>
+    <TattooDivider />
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <div v-if="loading" class="flex items-center justify-center py-16 text-gray-500 text-sm">
+    <div class="tattoo-card p-0 overflow-hidden">
+      <div
+        v-if="loading"
+        class="flex items-center justify-center py-16 font-cinzel text-tattoo-warm text-sm"
+      >
         載入中...
       </div>
       <div
         v-else-if="requests.length === 0"
-        class="flex items-center justify-center py-16 text-gray-500 text-sm"
+        class="flex items-center justify-center py-16 font-cinzel text-tattoo-warm text-sm"
       >
         目前沒有待審加班申請
       </div>
       <table v-else class="w-full text-sm">
         <thead>
-          <tr class="bg-gray-50 border-b border-gray-200">
-            <th class="text-left px-4 py-3 font-medium text-gray-600">申請人</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">加班日期</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">時間</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">時數</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">狀態</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">操作</th>
+          <tr>
+            <th class="tattoo-table-header text-left">申請人</th>
+            <th class="tattoo-table-header text-left">加班日期</th>
+            <th class="tattoo-table-header text-left">時間</th>
+            <th class="tattoo-table-header text-left">時數</th>
+            <th class="tattoo-table-header text-left">狀態</th>
+            <th class="tattoo-table-header text-left">操作</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="req in requests"
-            :key="req._id"
-            class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-          >
-            <td class="px-4 py-3 font-medium text-gray-900">{{ req.userName }}</td>
-            <td class="px-4 py-3 text-gray-600">{{ formatDate(req.date) }}</td>
-            <td class="px-4 py-3 text-gray-600">{{ req.startTime }} ～ {{ req.endTime }}</td>
-            <td class="px-4 py-3 text-gray-600">{{ req.hours.toFixed(1) }} h</td>
-            <td class="px-4 py-3">
+          <tr v-for="req in requests" :key="req._id" class="tattoo-table-row">
+            <td class="tattoo-table-cell font-cinzel text-tattoo-gold">{{ req.userName }}</td>
+            <td class="tattoo-table-cell text-tattoo-cream">{{ formatDate(req.date) }}</td>
+            <td class="tattoo-table-cell text-tattoo-cream">{{ req.startTime }} ～ {{ req.endTime }}</td>
+            <td class="tattoo-table-cell text-tattoo-cream">{{ req.hours.toFixed(1) }} h</td>
+            <td class="tattoo-table-cell">
               <StatusBadge :status="req.status" type="overtime" />
             </td>
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-2">
+            <td class="tattoo-table-cell">
+              <div class="flex items-center gap-3">
                 <button
-                  class="text-green-600 hover:text-green-800 text-xs font-medium px-2 py-1 rounded hover:bg-green-50"
+                  class="font-cinzel text-tattoo-gold hover:text-tattoo-cream text-xs uppercase tracking-wider transition-colors"
                   @click="openApprove(req._id)"
                 >
-                  核准
+                  ✦ 核准
                 </button>
                 <button
-                  class="text-red-500 hover:text-red-700 text-xs font-medium px-2 py-1 rounded hover:bg-red-50"
+                  class="font-cinzel text-tattoo-red hover:text-tattoo-cream text-xs uppercase tracking-wider transition-colors"
                   @click="openReject(req._id)"
                 >
-                  拒絕
+                  ✦ 拒絕
                 </button>
               </div>
             </td>
@@ -57,7 +57,6 @@
       </table>
     </div>
 
-    <!-- 核准確認 -->
     <ConfirmModal
       v-model="showApproveModal"
       title="核准加班申請"
@@ -67,7 +66,6 @@
       @confirm="handleApprove"
     />
 
-    <!-- 拒絕確認 -->
     <ConfirmModal
       v-model="showRejectModal"
       title="拒絕加班申請"
@@ -86,6 +84,7 @@
   import type { OvertimeRequest } from '@/types'
   import StatusBadge from '@/components/StatusBadge.vue'
   import ConfirmModal from '@/components/ConfirmModal.vue'
+  import TattooDivider from '@/components/tattoo/TattooDivider.vue'
 
   const requests = ref<OvertimeRequest[]>([])
   const loading = ref(false)

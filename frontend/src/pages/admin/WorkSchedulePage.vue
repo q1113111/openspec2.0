@@ -1,60 +1,41 @@
 <template>
   <div class="max-w-xl space-y-4">
-    <h2 class="text-lg font-semibold text-gray-900">工時設定</h2>
+    <h2 class="tattoo-heading text-xl">✦ 工時設定</h2>
+    <TattooDivider />
 
     <div
       v-if="loading"
-      class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-500 text-sm"
+      class="tattoo-card p-12 text-center font-cinzel text-tattoo-warm text-sm"
     >
       載入中...
     </div>
 
-    <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div v-else class="tattoo-card">
       <form @submit.prevent="handleSave" class="space-y-5">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">核心上班時間</label>
-            <input
-              v-model="form.coreStart"
-              type="time"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label class="tattoo-label">核心上班時間</label>
+            <input v-model="form.coreStart" type="time" required class="tattoo-input" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">核心下班時間</label>
-            <input
-              v-model="form.coreEnd"
-              type="time"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label class="tattoo-label">核心下班時間</label>
+            <input v-model="form.coreEnd" type="time" required class="tattoo-input" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">彈性上班最早時間</label>
-            <input
-              v-model="form.flexStart"
-              type="time"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label class="tattoo-label">彈性上班最早時間</label>
+            <input v-model="form.flexStart" type="time" required class="tattoo-input" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">彈性下班最晚時間</label>
-            <input
-              v-model="form.flexEnd"
-              type="time"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label class="tattoo-label">彈性下班最晚時間</label>
+            <input v-model="form.flexEnd" type="time" required class="tattoo-input" />
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1.5">每日標準工時（小時）</label>
+          <label class="tattoo-label">每日標準工時（小時）</label>
           <input
             v-model.number="form.dailyHours"
             type="number"
@@ -62,37 +43,46 @@
             max="24"
             step="0.5"
             required
-            class="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="tattoo-input w-32"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">工作日</label>
-          <div class="flex gap-3 flex-wrap">
+          <label class="tattoo-label mb-2 block">工作日</label>
+          <div class="flex gap-4 flex-wrap">
             <label
               v-for="day in weekDays"
               :key="day.value"
-              class="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer"
+              class="flex items-center gap-2 font-cinzel text-tattoo-warm text-xs uppercase tracking-wider cursor-pointer"
             >
-              <input type="checkbox" :value="day.value" v-model="form.workDays" class="rounded" />
+              <input
+                type="checkbox"
+                :value="day.value"
+                v-model="form.workDays"
+                class="accent-tattoo-gold"
+              />
               {{ day.label }}
             </label>
           </div>
         </div>
 
-        <div v-if="successMsg" class="text-sm text-green-600 bg-green-50 px-3 py-2 rounded-md">
+        <TattooDivider />
+
+        <div
+          v-if="successMsg"
+          class="font-cinzel text-sm px-3 py-2 border border-tattoo-gold text-tattoo-gold bg-tattoo-dark"
+        >
           {{ successMsg }}
         </div>
-        <div v-if="errorMsg" class="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">
+        <div
+          v-if="errorMsg"
+          class="font-cinzel text-sm px-3 py-2 border border-tattoo-red text-tattoo-red bg-tattoo-dark"
+        >
           {{ errorMsg }}
         </div>
 
-        <button
-          type="submit"
-          :disabled="saving"
-          class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-        >
-          {{ saving ? '儲存中...' : '儲存設定' }}
+        <button type="submit" :disabled="saving" class="tattoo-btn-primary">
+          {{ saving ? '儲存中...' : '✦ 儲存設定' }}
         </button>
       </form>
     </div>
@@ -103,6 +93,7 @@
   import { ref, onMounted } from 'vue'
   import api from '@/utils/api'
   import type { WorkSchedule } from '@/types'
+  import TattooDivider from '@/components/tattoo/TattooDivider.vue'
 
   const loading = ref(false)
   const saving = ref(false)
@@ -146,7 +137,7 @@
     successMsg.value = ''
     try {
       await api.put('/work-schedule', form.value)
-      successMsg.value = '設定已儲存'
+      successMsg.value = '✦ 設定已儲存'
       setTimeout(() => (successMsg.value = ''), 3000)
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } }

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>刺青風格強度</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #111; color: #F5F0E8; font-family: 'Cinzel', serif; padding: 2rem; min-height: 100vh; }
+  h2 { font-family: 'Cinzel Decorative', serif; color: #DAA520; text-align: center; font-size: 1.4rem; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+  .subtitle { text-align: center; color: #C0B99A; font-size: 0.85rem; letter-spacing: 0.08em; margin-bottom: 2.5rem; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+
+  /* Style A - Dark Elegant */
+  .card-a {
+    border: 2px solid #DAA520;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: #1a1a1a;
+  }
+  .card-a:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(218,165,32,0.3); }
+  .card-a.selected { box-shadow: 0 0 0 3px #DAA520, 0 8px 24px rgba(218,165,32,0.4); }
+  .preview-a {
+    background: #1a1a1a;
+    border-bottom: 1px solid #3a3530;
+    padding: 1.2rem;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+  .preview-a .sidebar { position: absolute; left: 0; top: 0; bottom: 0; width: 60px; background: #242424; border-right: 1px solid #DAA520; display: flex; flex-direction: column; align-items: center; padding-top: 12px; gap: 12px; }
+  .preview-a .dot { width: 8px; height: 8px; background: #DAA520; border-radius: 50%; }
+  .preview-a .dot.active { background: #DC143C; }
+  .preview-a .content { margin-left: 70px; }
+  .preview-a .header-bar { background: #242424; border: 1px solid #3a3530; border-bottom: 2px solid #DAA520; padding: 6px 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .preview-a .header-bar span { font-family: 'Cinzel Decorative', serif; color: #DAA520; font-size: 0.55rem; letter-spacing: 0.12em; }
+  .preview-a .card { background: #242424; border: 1px solid #3a3530; border-top: 2px solid #DAA520; padding: 8px; margin-bottom: 6px; }
+  .preview-a .card-title { color: #DAA520; font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+  .preview-a .card-val { color: #F5F0E8; font-size: 0.85rem; font-weight: 700; }
+  .preview-a .btn { background: #DC143C; border: 1px solid #DAA520; color: #F5F0E8; font-size: 0.45rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; display: inline-block; margin-top: 4px; }
+  /* corner decorations */
+  .corner { position: absolute; width: 16px; height: 16px; }
+  .corner.tl { top: 4px; left: 64px; border-top: 2px solid #DAA520; border-left: 2px solid #DAA520; }
+  .corner.tr { top: 4px; right: 4px; border-top: 2px solid #DAA520; border-right: 2px solid #DAA520; }
+  .corner.bl { bottom: 4px; left: 64px; border-bottom: 2px solid #DAA520; border-left: 2px solid #DAA520; }
+  .corner.br { bottom: 4px; right: 4px; border-bottom: 2px solid #DAA520; border-right: 2px solid #DAA520; }
+
+  /* Style B - Bold Tattoo */
+  .card-b {
+    border: 2px solid #DC143C;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: #0d0d0d;
+  }
+  .card-b:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(220,20,60,0.4); }
+  .card-b.selected { box-shadow: 0 0 0 3px #DC143C, 0 8px 24px rgba(220,20,60,0.5); }
+  .preview-b {
+    background: #0d0d0d;
+    border-bottom: 1px solid #2a2a2a;
+    padding: 1.2rem;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+  .preview-b .top-bar { background: #1a0808; border-bottom: 3px solid #DC143C; padding: 6px 10px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .preview-b .logo-txt { font-family: 'Cinzel Decorative', serif; color: #DC143C; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; }
+  .preview-b .nav-pills { display: flex; gap: 4px; }
+  .preview-b .pill { background: transparent; border: 1px solid #DC143C; color: #DC143C; font-size: 0.4rem; padding: 2px 5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .preview-b .pill.act { background: #DC143C; color: #F5F0E8; }
+  .preview-b .big-num { font-family: 'Cinzel Decorative', serif; color: #DC143C; font-size: 2.5rem; font-weight: 700; line-height: 1; }
+  .preview-b .big-label { color: #888; font-size: 0.45rem; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px; }
+  .preview-b .divider { border: none; border-top: 2px solid #DC143C; margin: 8px 0; position: relative; }
+  .preview-b .divider::after { content: '✦'; position: absolute; left: 50%; top: -8px; transform: translateX(-50%); color: #DC143C; font-size: 0.6rem; background: #0d0d0d; padding: 0 4px; }
+  .preview-b .row { display: flex; gap: 6px; }
+  .preview-b .stat { flex: 1; background: #1a0808; border: 1px solid #DC143C; padding: 5px; text-align: center; }
+  .preview-b .stat-v { color: #DC143C; font-size: 0.9rem; font-weight: 700; }
+  .preview-b .stat-l { color: #888; font-size: 0.4rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* Style C - Neo-Traditional */
+  .card-c {
+    border: 2px solid #8B7355;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: #161410;
+  }
+  .card-c:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(139,115,85,0.3); }
+  .card-c.selected { box-shadow: 0 0 0 3px #8B7355, 0 8px 24px rgba(139,115,85,0.4); }
+  .preview-c {
+    background: #161410;
+    border-bottom: 1px solid #3a3530;
+    padding: 1.2rem;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+  .preview-c .sidebar { position: absolute; left: 0; top: 0; bottom: 0; width: 55px; background: #1e1a14; border-right: 2px solid #8B7355; display: flex; flex-direction: column; align-items: center; padding-top: 10px; gap: 10px; }
+  .preview-c .rose { font-size: 1.4rem; }
+  .preview-c .nav-icon { width: 24px; height: 3px; background: #8B7355; border-radius: 2px; }
+  .preview-c .nav-icon.active { background: #DAA520; }
+  .preview-c .main { margin-left: 65px; }
+  .preview-c .banner { background: linear-gradient(90deg, #8B0000, #DC143C, #8B0000); padding: 5px 10px; margin-bottom: 8px; text-align: center; border: 1px solid #DAA520; }
+  .preview-c .banner-txt { font-family: 'Cinzel Decorative', serif; color: #DAA520; font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase; }
+  .preview-c .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .preview-c .item { background: #1e1a14; border: 1px solid #8B7355; border-top: 2px solid #DAA520; padding: 5px; }
+  .preview-c .item-title { color: #DAA520; font-size: 0.45rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .preview-c .item-val { color: #F5F0E8; font-size: 0.8rem; font-weight: 600; margin-top: 2px; }
+  .preview-c .scroll { position: absolute; bottom: 8px; left: 65px; right: 8px; height: 20px; background: linear-gradient(90deg, #3a2010 0%, #8B4513 10%, #C68642 50%, #8B4513 90%, #3a2010 100%); border: 1px solid #DAA520; display: flex; align-items: center; justify-content: center; }
+  .preview-c .scroll-txt { font-family: 'Cinzel Decorative', serif; color: #1a1a1a; font-size: 0.4rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+
+  .card-label { padding: 1rem 1.2rem; }
+  .card-label .letter { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background: #DAA520; color: #1a1a1a; font-weight: 700; text-align: center; line-height: 28px; font-size: 0.85rem; margin-right: 0.6rem; }
+  .card-b .card-label .letter { background: #DC143C; }
+  .card-c .card-label .letter { background: #8B7355; }
+  .card-label h3 { display: inline; font-size: 0.95rem; color: #F5F0E8; letter-spacing: 0.05em; }
+  .card-label p { color: #C0B99A; font-size: 0.78rem; margin-top: 0.5rem; line-height: 1.5; font-family: Georgia, serif; letter-spacing: 0; }
+
+  .selected-indicator { display: none; text-align: center; margin-top: 1.5rem; color: #DAA520; font-size: 0.9rem; letter-spacing: 0.1em; }
+  .selected-indicator.show { display: block; }
+</style>
+<script>
+  let selected = null;
+  function selectCard(el, choice) {
+    document.querySelectorAll('.card-a,.card-b,.card-c').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selected = choice;
+    document.getElementById('indicator').classList.add('show');
+    document.getElementById('indicator').textContent = '✦ 已選擇：' + choice + ' ✦';
+    // record event
+    fetch('/__record', { method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ type: 'click', choice: choice, timestamp: Date.now() }) }).catch(() => {});
+  }
+</script>
+</head>
+<body>
+<h2>美式刺青視覺風格</h2>
+<p class="subtitle">選擇最符合你想要的氛圍</p>
+
+<div class="cards">
+  <!-- A: Dark Elegant -->
+  <div class="card-a" onclick="selectCard(this, 'A')">
+    <div class="preview-a">
+      <div class="sidebar">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div class="content">
+        <div class="header-bar">
+          <span>Attendance System</span>
+          <span>Admin ▾</span>
+        </div>
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+        <div class="card">
+          <div class="card-title">今日出勤</div>
+          <div class="card-val">09:02</div>
+          <div class="btn">打卡下班</div>
+        </div>
+        <div class="card">
+          <div class="card-title">假別餘額</div>
+          <div class="card-val">12 天</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">
+      <span class="letter">A</span><h3>暗黑典雅</h3>
+      <p>深黑底 + 金邊框架 + 角落裝飾。低調奢華，紅色作為強調點綴。適合需要長時間使用的工作系統。</p>
+    </div>
+  </div>
+
+  <!-- B: Bold Red -->
+  <div class="card-b" onclick="selectCard(this, 'B')">
+    <div class="preview-b">
+      <div class="top-bar">
+        <span class="logo-txt">✦ Attendance ✦</span>
+        <div class="nav-pills">
+          <span class="pill act">首頁</span>
+          <span class="pill">出勤</span>
+          <span class="pill">假單</span>
+        </div>
+      </div>
+      <div class="big-num">12</div>
+      <div class="big-label">剩餘年假天數</div>
+      <hr class="divider">
+      <div class="row">
+        <div class="stat"><div class="stat-v">09:02</div><div class="stat-l">上班</div></div>
+        <div class="stat"><div class="stat-v">3</div><div class="stat-l">待審</div></div>
+        <div class="stat"><div class="stat-v">2</div><div class="stat-l">加班</div></div>
+      </div>
+    </div>
+    <div class="card-label">
+      <span class="letter">B</span><h3>狂野紅黑</h3>
+      <p>猩紅為主色、極黑底、大膽排版。刺青感最強烈，視覺衝擊力高。適合展示用途或強調品牌個性。</p>
+    </div>
+  </div>
+
+  <!-- C: Neo-Traditional -->
+  <div class="card-c" onclick="selectCard(this, 'C')">
+    <div class="preview-c">
+      <div class="sidebar">
+        <span class="rose">🌹</span>
+        <div class="nav-icon active"></div>
+        <div class="nav-icon"></div>
+        <div class="nav-icon"></div>
+        <div class="nav-icon"></div>
+      </div>
+      <div class="main">
+        <div class="banner"><span class="banner-txt">✦ Dashboard ✦</span></div>
+        <div class="grid">
+          <div class="item"><div class="item-title">出勤</div><div class="item-val">09:02</div></div>
+          <div class="item"><div class="item-title">年假</div><div class="item-val">12天</div></div>
+          <div class="item"><div class="item-title">待審</div><div class="item-val">3件</div></div>
+          <div class="item"><div class="item-title">加班</div><div class="item-val">2件</div></div>
+        </div>
+      </div>
+      <div class="scroll"><span class="scroll-txt">✦ Old School Tattoo ✦</span></div>
+    </div>
+    <div class="card-label">
+      <span class="letter">C</span><h3>新傳統刺青</h3>
+      <p>玫瑰、卷軸、橫幅裝飾大量融入。棕金暖色系，老派刺青插圖元素最豐富。手工感與復古氛圍最濃。</p>
+    </div>
+  </div>
+</div>
+
+<div id="indicator" class="selected-indicator"></div>
+</body>
+</html>

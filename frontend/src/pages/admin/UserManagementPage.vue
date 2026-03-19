@@ -1,104 +1,100 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-gray-900">使用者管理</h2>
-      <button
-        class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-        @click="openCreate"
-      >
-        + 新增使用者
+      <h2 class="tattoo-heading text-xl">✦ 使用者管理</h2>
+      <button class="tattoo-btn-primary" @click="openCreate">
+        ✦ 新增使用者
       </button>
     </div>
 
-    <!-- 篩選 -->
+    <!-- 篩選列 -->
     <div class="flex items-center gap-3">
       <input
         v-model="searchQuery"
         type="text"
         placeholder="搜尋姓名或信箱..."
-        class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+        class="tattoo-input w-64"
       />
-      <select
-        v-model="filterRole"
-        class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
+      <select v-model="filterRole" class="tattoo-select w-auto">
         <option value="">所有角色</option>
         <option value="admin">管理員</option>
         <option value="hr">HR</option>
         <option value="employee">員工</option>
       </select>
-      <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-        <input v-model="showInactive" type="checkbox" class="rounded" />
+      <label class="flex items-center gap-2 font-cinzel text-tattoo-warm text-xs uppercase tracking-wider cursor-pointer">
+        <input v-model="showInactive" type="checkbox" class="accent-tattoo-red" />
         顯示停用帳號
       </label>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <TattooDivider />
+
+    <div class="tattoo-card p-0 overflow-hidden">
       <div
         v-if="userStore.isLoading"
-        class="flex items-center justify-center py-16 text-gray-500 text-sm"
+        class="flex items-center justify-center py-16 font-cinzel text-tattoo-warm text-sm"
       >
         載入中...
       </div>
       <div
         v-else-if="filteredUsers.length === 0"
-        class="flex items-center justify-center py-16 text-gray-500 text-sm"
+        class="flex items-center justify-center py-16 font-cinzel text-tattoo-warm text-sm"
       >
         沒有符合條件的使用者
       </div>
       <table v-else class="w-full text-sm">
         <thead>
-          <tr class="bg-gray-50 border-b border-gray-200">
-            <th class="text-left px-4 py-3 font-medium text-gray-600">姓名</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">電子郵件</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">角色</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">部門</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">到職日</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">狀態</th>
-            <th class="text-left px-4 py-3 font-medium text-gray-600">操作</th>
+          <tr>
+            <th class="tattoo-table-header text-left">姓名</th>
+            <th class="tattoo-table-header text-left">電子郵件</th>
+            <th class="tattoo-table-header text-left">角色</th>
+            <th class="tattoo-table-header text-left">部門</th>
+            <th class="tattoo-table-header text-left">到職日</th>
+            <th class="tattoo-table-header text-left">狀態</th>
+            <th class="tattoo-table-header text-left">操作</th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="user in filteredUsers"
             :key="user._id"
-            class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-            :class="{ 'opacity-60': !user.isActive }"
+            class="tattoo-table-row"
+            :class="{ 'opacity-50': !user.isActive }"
           >
-            <td class="px-4 py-3 font-medium text-gray-900">{{ user.name }}</td>
-            <td class="px-4 py-3 text-gray-600">{{ user.email }}</td>
-            <td class="px-4 py-3">
-              <span
-                class="px-2 py-0.5 rounded-full text-xs font-medium"
-                :class="roleClass(user.role)"
-              >
+            <td class="tattoo-table-cell font-cinzel text-tattoo-gold">{{ user.name }}</td>
+            <td class="tattoo-table-cell text-tattoo-cream text-xs">{{ user.email }}</td>
+            <td class="tattoo-table-cell">
+              <span class="tattoo-badge" :class="roleClass(user.role)">
                 {{ ROLE_LABELS[user.role] }}
               </span>
             </td>
-            <td class="px-4 py-3 text-gray-600">{{ user.department }}</td>
-            <td class="px-4 py-3 text-gray-500">{{ formatDate(user.employmentDate) }}</td>
-            <td class="px-4 py-3">
+            <td class="tattoo-table-cell text-tattoo-cream">{{ user.department }}</td>
+            <td class="tattoo-table-cell text-tattoo-warm">{{ formatDate(user.employmentDate) }}</td>
+            <td class="tattoo-table-cell">
               <span
-                class="px-2 py-0.5 rounded-full text-xs font-medium"
-                :class="user.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'"
+                class="tattoo-badge"
+                :class="user.isActive ? 'text-tattoo-gold border-tattoo-gold' : 'text-tattoo-warm border-tattoo-warm opacity-50'"
               >
                 {{ user.isActive ? '啟用' : '停用' }}
               </span>
             </td>
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-2">
-                <button class="text-blue-600 hover:text-blue-800 text-xs" @click="openEdit(user)">
+            <td class="tattoo-table-cell">
+              <div class="flex items-center gap-3">
+                <button
+                  class="font-cinzel text-tattoo-gold hover:text-tattoo-cream text-xs uppercase tracking-wider transition-colors"
+                  @click="openEdit(user)"
+                >
                   編輯
                 </button>
                 <button
-                  class="text-gray-500 hover:text-gray-700 text-xs"
+                  class="font-cinzel text-tattoo-warm hover:text-tattoo-gold text-xs uppercase tracking-wider transition-colors"
                   @click="resendEmail(user._id)"
                 >
-                  重送信件
+                  重送信
                 </button>
                 <button
                   v-if="user.isActive"
-                  class="text-red-500 hover:text-red-700 text-xs"
+                  class="font-cinzel text-tattoo-red hover:text-tattoo-cream text-xs uppercase tracking-wider transition-colors"
                   @click="openDisable(user._id)"
                 >
                   停用
@@ -130,6 +126,7 @@
   import type { User } from '@/types'
   import UserFormModal from './UserFormModal.vue'
   import ConfirmModal from '@/components/ConfirmModal.vue'
+  import TattooDivider from '@/components/tattoo/TattooDivider.vue'
 
   const userStore = useUserStore()
 
@@ -141,12 +138,12 @@
   const editTarget = ref<User | null>(null)
   const disableTargetId = ref('')
 
-  const ROLE_LABELS: Record<string, string> = { admin: '管理員', hr: 'HR', employee: '員工' }
+  const ROLE_LABELS: Record<string, string> = { admin: 'ADMIN', hr: 'HR', employee: 'EMPLOYEE' }
 
   function roleClass(role: string) {
-    if (role === 'admin') return 'bg-purple-100 text-purple-700'
-    if (role === 'hr') return 'bg-blue-100 text-blue-700'
-    return 'bg-gray-100 text-gray-700'
+    if (role === 'admin') return 'text-tattoo-red border-tattoo-red'
+    if (role === 'hr') return 'text-tattoo-gold border-tattoo-gold'
+    return 'text-tattoo-warm border-tattoo-warm'
   }
 
   function formatDate(d: string) {

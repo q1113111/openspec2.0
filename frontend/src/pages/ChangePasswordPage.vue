@@ -1,50 +1,75 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+  <div class="min-h-screen flex items-center justify-center px-4" style="background-color: #0d0d0d;">
     <div class="w-full max-w-md">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-2">修改密碼</h2>
-        <p class="text-sm text-gray-500 mb-6">首次登入需要修改密碼，請設定新密碼後繼續使用。</p>
+      <!-- 標題 -->
+      <div class="text-center mb-8">
+        <TattooBanner>
+          <h1 class="tattoo-heading text-xl">CHANGE PASSWORD</h1>
+        </TattooBanner>
+        <p class="font-cinzel text-tattoo-warm text-xs uppercase tracking-widest mt-3">
+          首次登入需設定新密碼
+        </p>
+      </div>
 
-        <form @submit.prevent="handleSubmit" class="space-y-5">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">新密碼</label>
-            <input
-              v-model="newPassword"
-              type="password"
-              required
-              minlength="8"
-              placeholder="至少 8 個字元"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+      <!-- 卡片 -->
+      <div class="tattoo-card tattoo-card-double tattoo-corners relative">
+        <TattooCorner class="absolute top-0 left-0" :size="50" />
+        <TattooCorner class="absolute top-0 right-0" :size="50" style="transform: scaleX(-1);" />
+        <TattooCorner class="absolute bottom-0 left-0" :size="50" style="transform: scaleY(-1);" />
+        <TattooCorner class="absolute bottom-0 right-0" :size="50" style="transform: scale(-1);" />
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">確認新密碼</label>
-            <input
-              v-model="confirmPassword"
-              type="password"
-              required
-              placeholder="再次輸入新密碼"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+        <div class="relative z-10">
+          <TattooDivider class="mb-6" />
 
-          <div v-if="errorMsg" class="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">
-            {{ errorMsg }}
-          </div>
+          <form @submit.prevent="handleSubmit" class="space-y-5">
+            <div>
+              <label class="tattoo-label">新密碼</label>
+              <input
+                v-model="newPassword"
+                type="password"
+                required
+                minlength="8"
+                placeholder="至少 8 個字元"
+                class="tattoo-input"
+              />
+            </div>
 
-          <div v-if="successMsg" class="text-sm text-green-600 bg-green-50 px-3 py-2 rounded-md">
-            {{ successMsg }}
-          </div>
+            <div>
+              <label class="tattoo-label">確認新密碼</label>
+              <input
+                v-model="confirmPassword"
+                type="password"
+                required
+                placeholder="再次輸入新密碼"
+                class="tattoo-input"
+              />
+            </div>
 
-          <button
-            type="submit"
-            :disabled="authStore.isLoading"
-            class="w-full py-2.5 px-4 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {{ authStore.isLoading ? '處理中...' : '確認修改' }}
-          </button>
-        </form>
+            <div
+              v-if="errorMsg"
+              class="text-sm font-cinzel px-3 py-2 border border-tattoo-red text-tattoo-red bg-tattoo-dark"
+            >
+              {{ errorMsg }}
+            </div>
+
+            <div
+              v-if="successMsg"
+              class="text-sm font-cinzel px-3 py-2 border border-tattoo-gold text-tattoo-gold bg-tattoo-dark"
+            >
+              {{ successMsg }}
+            </div>
+
+            <TattooDivider class="my-4" />
+
+            <button
+              type="submit"
+              :disabled="authStore.isLoading"
+              class="tattoo-btn-primary w-full text-center"
+            >
+              {{ authStore.isLoading ? '處理中...' : '✦ 確認修改 ✦' }}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -54,6 +79,9 @@
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useAuthStore } from '@/stores/auth'
+  import TattooBanner from '@/components/tattoo/TattooBanner.vue'
+  import TattooCorner from '@/components/tattoo/TattooCorner.vue'
+  import TattooDivider from '@/components/tattoo/TattooDivider.vue'
 
   const authStore = useAuthStore()
   const router = useRouter()

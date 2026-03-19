@@ -1,30 +1,33 @@
 <template>
-  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
-    <div class="flex items-center gap-3 px-6 py-5 border-b border-gray-200">
-      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-        <span class="text-white text-sm font-bold">勤</span>
+  <aside
+    class="w-64 flex flex-col h-full flex-shrink-0"
+    style="background-color: #0d0d0d; border-right: 1px solid #3a3530; border-left: 3px solid #DC143C;"
+  >
+    <!-- Logo 區 -->
+    <div class="px-6 py-5" style="border-bottom: 1px solid #3a3530;">
+      <div class="text-center">
+        <p class="tattoo-heading text-lg tracking-[0.2em]">✦ ATTENDANCE ✦</p>
+        <p class="font-cinzel text-tattoo-warm text-xs tracking-widest uppercase mt-1">Management System</p>
       </div>
-      <span class="font-semibold text-gray-900">出缺勤系統</span>
     </div>
 
-    <nav class="flex-1 overflow-y-auto py-4 px-3">
-      <div class="space-y-1">
-        <RouterLink
-          v-for="item in menuItems"
-          :key="item.to"
-          :to="item.to"
-          class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-          :class="
-            isActive(item.to)
-              ? 'bg-blue-50 text-blue-700'
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-          "
-        >
-          <span class="text-base">{{ item.icon }}</span>
-          {{ item.label }}
-        </RouterLink>
-      </div>
+    <!-- 導覽選單 -->
+    <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
+      <RouterLink
+        v-for="item in menuItems"
+        :key="item.to"
+        :to="item.to"
+        :class="isActive(item.to) ? 'tattoo-nav-active' : 'tattoo-nav-link'"
+      >
+        <span class="text-base w-5 text-center">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </RouterLink>
     </nav>
+
+    <!-- 底部裝飾 -->
+    <div class="px-6 py-4" style="border-top: 1px solid #3a3530;">
+      <TattooDivider :my="0" />
+    </div>
   </aside>
 </template>
 
@@ -32,6 +35,7 @@
   import { computed } from 'vue'
   import { useRoute } from 'vue-router'
   import { useAuthStore } from '@/stores/auth'
+  import TattooDivider from '@/components/tattoo/TattooDivider.vue'
 
   const route = useRoute()
   const authStore = useAuthStore()

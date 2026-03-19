@@ -1,51 +1,55 @@
 <template>
   <div class="max-w-2xl space-y-5">
     <div class="flex items-center gap-3">
-      <RouterLink to="/leave/my" class="text-sm text-gray-500 hover:text-gray-700"
-        >← 返回</RouterLink
+      <RouterLink
+        to="/leave/my"
+        class="font-cinzel text-tattoo-warm hover:text-tattoo-gold text-xs uppercase tracking-wider transition-colors"
       >
+        ← 返回
+      </RouterLink>
     </div>
 
-    <div v-if="loading" class="text-sm text-gray-500">載入中...</div>
+    <div v-if="loading" class="font-cinzel text-tattoo-warm text-sm">載入中...</div>
 
     <template v-else-if="request">
       <!-- 基本資訊 -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="tattoo-card" style="border-top: 2px solid #DC143C;">
         <div class="flex items-start justify-between mb-4">
-          <h2 class="text-lg font-semibold text-gray-900">假單詳情</h2>
+          <h2 class="tattoo-heading text-lg">✦ 假單詳情</h2>
           <StatusBadge :status="request.status" type="leave" />
         </div>
+        <TattooDivider class="mb-4" />
 
-        <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+        <dl class="grid grid-cols-2 gap-x-6 gap-y-4">
           <div v-if="request.userName">
-            <dt class="text-gray-500">申請人</dt>
-            <dd class="font-medium text-gray-900 mt-0.5">{{ request.userName }}</dd>
+            <dt class="tattoo-label">申請人</dt>
+            <dd class="font-cinzel text-tattoo-cream mt-0.5">{{ request.userName }}</dd>
           </div>
           <div>
-            <dt class="text-gray-500">假別</dt>
-            <dd class="font-medium text-gray-900 mt-0.5">{{ LEAVE_TYPE_LABELS[request.type] }}</dd>
+            <dt class="tattoo-label">假別</dt>
+            <dd class="font-cinzel text-tattoo-gold mt-0.5">{{ LEAVE_TYPE_LABELS[request.type] }}</dd>
           </div>
           <div>
-            <dt class="text-gray-500">請假期間</dt>
-            <dd class="font-medium text-gray-900 mt-0.5">
+            <dt class="tattoo-label">請假期間</dt>
+            <dd class="font-cinzel text-tattoo-cream mt-0.5">
               {{ formatDate(request.startDate) }} ～ {{ formatDate(request.endDate) }}
             </dd>
           </div>
           <div>
-            <dt class="text-gray-500">天數</dt>
-            <dd class="font-medium text-gray-900 mt-0.5">{{ request.totalDays }} 天</dd>
+            <dt class="tattoo-label">天數</dt>
+            <dd class="font-cinzel-decorative text-tattoo-red text-xl mt-0.5">{{ request.totalDays }} 天</dd>
           </div>
           <div v-if="request.proxyUserName">
-            <dt class="text-gray-500">代理人</dt>
-            <dd class="font-medium text-gray-900 mt-0.5">{{ request.proxyUserName }}</dd>
+            <dt class="tattoo-label">代理人</dt>
+            <dd class="font-cinzel text-tattoo-cream mt-0.5">{{ request.proxyUserName }}</dd>
           </div>
           <div>
-            <dt class="text-gray-500">申請日期</dt>
-            <dd class="font-medium text-gray-900 mt-0.5">{{ formatDate(request.createdAt) }}</dd>
+            <dt class="tattoo-label">申請日期</dt>
+            <dd class="font-cinzel text-tattoo-warm mt-0.5">{{ formatDate(request.createdAt) }}</dd>
           </div>
           <div class="col-span-2">
-            <dt class="text-gray-500">原因</dt>
-            <dd class="font-medium text-gray-900 mt-0.5">{{ request.reason }}</dd>
+            <dt class="tattoo-label">原因</dt>
+            <dd class="font-cinzel text-tattoo-cream mt-0.5">{{ request.reason }}</dd>
           </div>
         </dl>
       </div>
@@ -53,63 +57,66 @@
       <!-- 審核紀錄 -->
       <div
         v-if="request.approvalHistory.length > 0"
-        class="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+        class="tattoo-card"
+        style="border-top: 2px solid #DC143C;"
       >
-        <h3 class="text-sm font-semibold text-gray-900 mb-3">審核紀錄</h3>
+        <h3 class="tattoo-subheading text-sm mb-3">審核紀錄</h3>
+        <TattooDivider class="mb-3" />
         <div class="space-y-3">
           <div
             v-for="(record, idx) in request.approvalHistory"
             :key="idx"
-            class="flex items-start gap-3 text-sm"
+            class="flex items-start gap-3"
           >
             <span
-              class="mt-0.5 w-2 h-2 rounded-full flex-shrink-0"
-              :class="record.action === 'approved' ? 'bg-green-500' : 'bg-red-500'"
+              class="mt-1 w-2 h-2 flex-shrink-0"
+              :style="{ backgroundColor: record.action === 'approved' ? '#DAA520' : '#DC143C' }"
             />
             <div>
-              <p class="text-gray-900">
-                <span class="font-medium">{{ record.userName ?? record.role }}</span>
+              <p class="font-cinzel text-sm text-tattoo-cream">
+                <span class="text-tattoo-gold">{{ record.userName ?? record.role }}</span>
                 <span
-                  class="ml-1"
-                  :class="record.action === 'approved' ? 'text-green-600' : 'text-red-600'"
+                  class="ml-1 font-cinzel"
+                  :class="record.action === 'approved' ? 'text-tattoo-gold' : 'text-tattoo-red'"
                 >
                   {{ record.action === 'approved' ? '核准' : '拒絕' }}
                 </span>
               </p>
-              <p v-if="record.comment" class="text-gray-500 mt-0.5">{{ record.comment }}</p>
-              <p class="text-gray-400 text-xs mt-0.5">{{ formatDateTime(record.at) }}</p>
+              <p v-if="record.comment" class="font-cinzel text-tattoo-warm text-xs mt-0.5">{{ record.comment }}</p>
+              <p class="font-cinzel text-tattoo-warm text-xs mt-0.5 opacity-60">{{ formatDateTime(record.at) }}</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- 審核操作（主管/HR） -->
-      <div v-if="canApprove" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-sm font-semibold text-gray-900 mb-3">審核操作</h3>
-        <div class="space-y-3">
+      <div v-if="canApprove" class="tattoo-card" style="border-top: 2px solid #DC143C;">
+        <h3 class="tattoo-subheading text-sm mb-3">審核操作</h3>
+        <TattooDivider class="mb-4" />
+        <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">審核意見（可選）</label>
+            <label class="tattoo-label">審核意見（可選）</label>
             <textarea
               v-model="comment"
               rows="2"
               placeholder="請輸入審核意見"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              class="tattoo-input resize-none"
             />
           </div>
           <div class="flex gap-3">
             <button
               :disabled="approving"
-              class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors disabled:opacity-50"
+              class="tattoo-btn-primary"
               @click="handleApprove"
             >
-              {{ approving ? '處理中...' : '核准' }}
+              {{ approving ? '處理中...' : '✦ 核准' }}
             </button>
             <button
               :disabled="rejecting"
-              class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
+              class="tattoo-btn-danger"
               @click="handleReject"
             >
-              {{ rejecting ? '處理中...' : '拒絕' }}
+              {{ rejecting ? '處理中...' : '✦ 拒絕' }}
             </button>
           </div>
         </div>
@@ -127,6 +134,7 @@
   import { LEAVE_TYPE_LABELS } from '@/types'
   import { useAuthStore } from '@/stores/auth'
   import StatusBadge from '@/components/StatusBadge.vue'
+  import TattooDivider from '@/components/tattoo/TattooDivider.vue'
 
   const route = useRoute()
   const authStore = useAuthStore()

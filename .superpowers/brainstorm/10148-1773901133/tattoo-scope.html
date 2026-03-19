@@ -1,0 +1,38 @@
+<h2>美式刺青風格 — 應用範圍</h2>
+<p class="subtitle">系統已有刺青色彩系統（黑、紅、金）和裝飾組件，請選擇改版的範圍</p>
+
+<div class="options">
+  <div class="option" data-choice="all" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>全站完全改版</h3>
+      <p>所有頁面（登入、儀表板、出勤、假單、加班、管理）全面採用美式刺青風格。深黑底 + 紅金裝飾 + Cinzel 字體一致應用。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="key" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>核心頁面優先</h3>
+      <p>登入頁、儀表板、側欄/頂欄等「門面」採用完整刺青風格；管理表格保留簡潔易讀版型，以刺青邊框點綴。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="layout" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>僅改 Layout 框架</h3>
+      <p>AppLayout、AppHeader、AppSidebar 全面刺青化；各業務頁面內容維持現狀，透過 Layout 統一呈現風格。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:2rem;">
+  <p class="label">目前狀態</p>
+  <div style="background:#1e1e1e;border-radius:8px;padding:1.2rem;font-family:monospace;font-size:0.85rem;color:#c8c8c8;">
+    ✅ 已有：tattoo 色彩系統（tattoo-black / red / gold）<br>
+    ✅ 已有：Cinzel 字體配置<br>
+    ✅ 已有：TattooCorner / TattooRose / TattooBanner / TattooAnchor / TattooDivider 組件<br>
+    ✅ 已有：tattoo-btn-* / tattoo-card / tattoo-input 快速類名<br>
+    ⚠️ 待做：Header/Sidebar 仍為白色系，尚未切換至刺青主題<br>
+    ⚠️ 待做：各業務頁面仍使用藍色 primary 系列
+  </div>
+</div>

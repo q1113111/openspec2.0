@@ -1,17 +1,20 @@
 <template>
-  <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+  <header
+    class="h-16 flex items-center justify-between px-6 flex-shrink-0"
+    style="background-color: #1a1a1a; border-bottom: 2px solid #DC143C;"
+  >
+    <!-- 頁面標題 -->
     <div>
-      <h1 class="text-lg font-semibold text-gray-900">{{ pageTitle }}</h1>
+      <h1 class="tattoo-subheading text-base">{{ pageTitle }}</h1>
     </div>
+
+    <!-- 右側使用者資訊 -->
     <div class="flex items-center gap-4">
-      <div class="text-sm text-gray-600">
-        <span class="font-medium text-gray-900">{{ authStore.user?.name }}</span>
-        <span class="ml-2 text-xs px-2 py-0.5 bg-gray-100 rounded-full">{{ roleLabel }}</span>
+      <div class="flex items-center gap-2">
+        <span class="font-cinzel text-tattoo-cream text-sm">{{ authStore.user?.name }}</span>
+        <span class="tattoo-badge text-tattoo-gold border-tattoo-gold text-xs">{{ roleLabel }}</span>
       </div>
-      <button
-        class="text-sm text-gray-500 hover:text-red-600 transition-colors px-3 py-1.5 rounded-md hover:bg-red-50"
-        @click="handleLogout"
-      >
+      <button class="tattoo-btn-danger text-xs py-1.5 px-4" @click="handleLogout">
         登出
       </button>
     </div>
@@ -41,9 +44,9 @@
   }
 
   const ROLE_LABELS: Record<string, string> = {
-    admin: '管理員',
+    admin: 'ADMIN',
     hr: 'HR',
-    employee: '員工',
+    employee: 'EMPLOYEE',
   }
 
   const pageTitle = computed(() => {

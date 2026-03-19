@@ -1,8 +1,5 @@
 <template>
-  <header
-    class="h-16 flex items-center justify-between px-6 flex-shrink-0"
-    style="background-color: #1a1a1a; border-bottom: 2px solid #DC143C;"
-  >
+  <header class="app-header h-16 flex items-center justify-between px-6 flex-shrink-0">
     <!-- 頁面標題 -->
     <div>
       <h1 class="tattoo-subheading text-base">{{ pageTitle }}</h1>
@@ -10,6 +7,7 @@
 
     <!-- 右側使用者資訊 -->
     <div class="flex items-center gap-4">
+      <ThemeToggle />
       <div class="flex items-center gap-2">
         <span class="font-cinzel text-tattoo-cream text-sm">{{ authStore.user?.name }}</span>
         <span class="tattoo-badge text-tattoo-gold border-tattoo-gold text-xs">{{ roleLabel }}</span>
@@ -25,6 +23,7 @@
   import { computed } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useAuthStore } from '@/stores/auth'
+  import ThemeToggle from '@/components/ThemeToggle.vue'
 
   const authStore = useAuthStore()
   const route = useRoute()
@@ -63,3 +62,10 @@
     router.push('/login')
   }
 </script>
+
+<style scoped>
+.app-header {
+  background-color: var(--tattoo-black);
+  border-bottom: 2px solid var(--tattoo-red);
+}
+</style>

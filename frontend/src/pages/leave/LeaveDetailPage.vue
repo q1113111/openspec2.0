@@ -13,7 +13,7 @@
 
     <template v-else-if="request">
       <!-- 基本資訊 -->
-      <div class="tattoo-card" style="border-top: 2px solid #DC143C;">
+      <div class="tattoo-card" style="border-top: 2px solid var(--tattoo-red);">
         <div class="flex items-start justify-between mb-4">
           <h2 class="tattoo-heading text-lg">✦ 假單詳情</h2>
           <StatusBadge :status="request.status" type="leave" />
@@ -58,7 +58,7 @@
       <div
         v-if="request.approvalHistory.length > 0"
         class="tattoo-card"
-        style="border-top: 2px solid #DC143C;"
+        style="border-top: 2px solid var(--tattoo-red);"
       >
         <h3 class="tattoo-subheading text-sm mb-3">審核紀錄</h3>
         <TattooDivider class="mb-3" />
@@ -70,7 +70,7 @@
           >
             <span
               class="mt-1 w-2 h-2 flex-shrink-0"
-              :style="{ backgroundColor: record.action === 'approved' ? '#DAA520' : '#DC143C' }"
+              :style="{ backgroundColor: record.action === 'approved' ? "var(--tattoo-gold)" : "var(--tattoo-red)" }"
             />
             <div>
               <p class="font-cinzel text-sm text-tattoo-cream">
@@ -90,7 +90,7 @@
       </div>
 
       <!-- 審核操作（主管/HR） -->
-      <div v-if="canApprove" class="tattoo-card" style="border-top: 2px solid #DC143C;">
+      <div v-if="canApprove" class="tattoo-card" style="border-top: 2px solid var(--tattoo-red);">
         <h3 class="tattoo-subheading text-sm mb-3">審核操作</h3>
         <TattooDivider class="mb-4" />
         <div class="space-y-4">

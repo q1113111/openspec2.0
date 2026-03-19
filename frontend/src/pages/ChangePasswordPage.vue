@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4" style="background-color: #0d0d0d;">
+  <div class="min-h-screen flex items-center justify-center px-4" style="background-color: var(--tattoo-black);">
     <div class="w-full max-w-md">
       <!-- 標題 -->
       <div class="text-center mb-8">

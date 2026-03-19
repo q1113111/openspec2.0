@@ -7,7 +7,7 @@
     </div>
 
     <!-- 今日打卡狀態 -->
-    <div class="tattoo-card tattoo-corners relative" style="border-top: 2px solid #DC143C;">
+    <div class="tattoo-card tattoo-corners relative" style="border-top: 2px solid var(--tattoo-red);">
       <div class="flex items-center justify-between mb-4">
         <span class="tattoo-subheading text-sm">打卡狀態</span>
         <span class="font-cinzel text-tattoo-warm text-xs">{{ todayDate }}</span>
@@ -73,7 +73,7 @@
           v-for="balance in leaveBalances"
           :key="balance.type"
           class="tattoo-card p-3"
-          style="border-top: 2px solid #DC143C;"
+          style="border-top: 2px solid var(--tattoo-red);"
         >
           <p class="tattoo-label">{{ LEAVE_TYPE_LABELS[balance.type] }}</p>
           <div class="flex items-baseline gap-1 mt-1">
@@ -100,7 +100,7 @@
         <RouterLink
           to="/leave/my"
           class="tattoo-card hover:border-tattoo-gold transition-colors group"
-          style="border-top: 2px solid #DC143C;"
+          style="border-top: 2px solid var(--tattoo-red);"
         >
           <div class="text-2xl mb-2">📅</div>
           <p class="tattoo-subheading text-sm group-hover:text-tattoo-gold">申請假單</p>
@@ -109,7 +109,7 @@
         <RouterLink
           to="/overtime/my"
           class="tattoo-card hover:border-tattoo-gold transition-colors group"
-          style="border-top: 2px solid #DC143C;"
+          style="border-top: 2px solid var(--tattoo-red);"
         >
           <div class="text-2xl mb-2">⏰</div>
           <p class="tattoo-subheading text-sm group-hover:text-tattoo-gold">申請加班</p>

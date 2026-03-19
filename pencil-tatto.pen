@@ -8,7 +8,7 @@
       "y": -35,
       "name": "container",
       "clip": true,
-      "width": 4560,
+      "width": "fill_container(4560)",
       "height": 4920,
       "fill": "#ffffff",
       "layout": "none",

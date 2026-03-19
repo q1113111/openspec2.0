@@ -4,7 +4,7 @@
       <div class="absolute inset-0 bg-black/70" @click="$emit('update:modelValue', false)" />
       <div class="relative tattoo-card w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
         <!-- 標題列 -->
-        <div class="flex items-center justify-between mb-4" style="border-bottom: 1px solid #3a3530; padding-bottom: 1rem;">
+        <div class="flex items-center justify-between mb-4" style="border-bottom: 1px solid var(--tattoo-border); padding-bottom: 1rem;">
           <h3 class="tattoo-heading text-base">
             {{ isEdit ? '✦ 編輯使用者' : '✦ 新增使用者' }}
           </h3>

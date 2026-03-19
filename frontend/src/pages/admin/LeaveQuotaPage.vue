@@ -30,7 +30,7 @@
     </div>
 
     <div v-else class="tattoo-card p-0 overflow-hidden">
-      <div class="px-4 py-3 flex items-center justify-between" style="border-bottom: 1px solid #3a3530;">
+      <div class="px-4 py-3 flex items-center justify-between" style="border-bottom: 1px solid var(--tattoo-border);">
         <span class="tattoo-subheading text-sm">{{ selectedUserName }} 的假別餘額</span>
         <button
           v-if="edited"

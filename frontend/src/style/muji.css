@@ -1,0 +1,240 @@
+/* ============================================
+   MUJI 奶油風主題覆蓋
+   MUJI-Inspired Cream Theme Override
+   ============================================ */
+
+/* ── 確保 html/body 始終可見（防止 UnoCSS 誤生成 display:none）── */
+html[data-theme="muji"],
+html[data-theme="muji"] body {
+  display: block !important;
+  visibility: visible !important;
+}
+
+[data-theme="muji"] {
+  --tattoo-black: #FAF8F5;
+  --tattoo-dark: #F2EDE5;
+  --tattoo-card: #EDEAE4;
+  --tattoo-red: #C0614A;
+  --tattoo-gold: #6B8C7A;
+  --tattoo-cream: #2C2825;
+  --tattoo-warm: #5C5650;
+  --tattoo-brown: #9A9088;
+  --tattoo-border: #DDD8CF;
+}
+
+[data-theme="muji"] body,
+[data-theme="muji"] * {
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: normal;
+}
+
+[data-theme="muji"] body {
+  background-color: var(--tattoo-black);
+  color: var(--tattoo-cream);
+}
+
+[data-theme="muji"] ::-webkit-scrollbar-track {
+  background: var(--tattoo-dark);
+}
+
+[data-theme="muji"] ::-webkit-scrollbar-thumb {
+  background: var(--tattoo-brown);
+}
+
+[data-theme="muji"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--tattoo-gold);
+}
+
+[data-theme="muji"] ::selection {
+  background: var(--tattoo-gold);
+  color: var(--tattoo-black);
+}
+
+[data-theme="muji"] input:-webkit-autofill,
+[data-theme="muji"] input:-webkit-autofill:hover,
+[data-theme="muji"] input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--tattoo-dark) inset;
+  -webkit-text-fill-color: var(--tattoo-cream);
+  caret-color: var(--tattoo-cream);
+}
+
+/* ── 覆蓋 UnoCSS shortcuts（單一 class 含多個樣式）── */
+
+/* 卡片 */
+[data-theme="muji"] .tattoo-card {
+  background-color: #EDEAE4 !important;
+  border-color: #DDD8CF !important;
+}
+
+/* 標題 */
+[data-theme="muji"] .tattoo-heading {
+  color: #6B8C7A !important;
+}
+[data-theme="muji"] .tattoo-subheading {
+  color: #6B8C7A !important;
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* 按鈕 */
+[data-theme="muji"] .tattoo-btn-primary {
+  background-color: #6B8C7A !important;
+  color: #ffffff !important;
+  border-color: #6B8C7A !important;
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: 0.02em !important;
+}
+[data-theme="muji"] .tattoo-btn-primary:hover:not(:disabled) {
+  background-color: #5a7a69 !important;
+  color: #ffffff !important;
+}
+[data-theme="muji"] .tattoo-btn-secondary {
+  color: #6B8C7A !important;
+  border-color: #6B8C7A !important;
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: 0.02em !important;
+}
+[data-theme="muji"] .tattoo-btn-secondary:hover {
+  background-color: #6B8C7A !important;
+  color: #ffffff !important;
+}
+[data-theme="muji"] .tattoo-btn-danger {
+  color: #C0614A !important;
+  border-color: #C0614A !important;
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: 0.02em !important;
+}
+[data-theme="muji"] .tattoo-btn-danger:hover {
+  background-color: #C0614A !important;
+  color: #ffffff !important;
+}
+
+/* 輸入框 */
+[data-theme="muji"] .tattoo-input {
+  background-color: #FAF8F5 !important;
+  color: #2C2825 !important;
+  border-color: #DDD8CF !important;
+  font-family: 'Inter', sans-serif !important;
+}
+[data-theme="muji"] .tattoo-input::placeholder {
+  color: #9A9088 !important;
+}
+[data-theme="muji"] .tattoo-input:focus {
+  border-color: #6B8C7A !important;
+}
+
+/* 選單 */
+[data-theme="muji"] .tattoo-select {
+  background-color: #FAF8F5 !important;
+  color: #2C2825 !important;
+  border-color: #DDD8CF !important;
+  font-family: 'Inter', sans-serif !important;
+}
+[data-theme="muji"] .tattoo-select:focus {
+  border-color: #6B8C7A !important;
+}
+
+/* 表格 */
+[data-theme="muji"] .tattoo-table-header {
+  background-color: #F2EDE5 !important;
+  color: #6B8C7A !important;
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: 0.02em !important;
+}
+[data-theme="muji"] .tattoo-table-row {
+  border-color: #DDD8CF !important;
+  color: #2C2825 !important;
+}
+[data-theme="muji"] .tattoo-table-row:hover {
+  background-color: #F2EDE5 !important;
+}
+[data-theme="muji"] .tattoo-table-cell {
+  color: #2C2825 !important;
+}
+
+/* 標籤 */
+[data-theme="muji"] .tattoo-label {
+  color: #5C5650 !important;
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
+}
+
+/* 徽章 */
+[data-theme="muji"] .tattoo-badge {
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* 分隔線 */
+[data-theme="muji"] .tattoo-divider {
+  border-color: #DDD8CF !important;
+}
+
+/* ── 覆蓋 UnoCSS 生成的 tattoo-* 原子 class ── */
+/* 背景色 */
+[data-theme="muji"] .bg-tattoo-black { background-color: #FAF8F5 !important; }
+[data-theme="muji"] .bg-tattoo-dark  { background-color: #F2EDE5 !important; }
+[data-theme="muji"] .bg-tattoo-card  { background-color: #EDEAE4 !important; }
+[data-theme="muji"] .bg-tattoo-red   { background-color: #C0614A !important; }
+[data-theme="muji"] .bg-tattoo-gold  { background-color: #6B8C7A !important; }
+[data-theme="muji"] .bg-tattoo-border { background-color: #DDD8CF !important; }
+[data-theme="muji"] .bg-tattoo-brown { background-color: #9A9088 !important; }
+
+/* 文字色 */
+[data-theme="muji"] .text-tattoo-gold   { color: #6B8C7A !important; }
+[data-theme="muji"] .text-tattoo-cream  { color: #2C2825 !important; }
+[data-theme="muji"] .text-tattoo-warm   { color: #5C5650 !important; }
+[data-theme="muji"] .text-tattoo-red    { color: #C0614A !important; }
+[data-theme="muji"] .text-tattoo-brown  { color: #9A9088 !important; }
+[data-theme="muji"] .text-tattoo-black  { color: #FAF8F5 !important; }
+
+/* 邊框色 */
+[data-theme="muji"] .border-tattoo-gold   { border-color: #6B8C7A !important; }
+[data-theme="muji"] .border-tattoo-red    { border-color: #C0614A !important; }
+[data-theme="muji"] .border-tattoo-brown  { border-color: #DDD8CF !important; }
+[data-theme="muji"] .border-tattoo-border { border-color: #DDD8CF !important; }
+[data-theme="muji"] .border-tattoo-cream  { border-color: #2C2825 !important; }
+
+/* Hover 狀態覆蓋 */
+[data-theme="muji"] .hover\:bg-tattoo-gold:hover  { background-color: #6B8C7A !important; }
+[data-theme="muji"] .hover\:bg-tattoo-red:hover   { background-color: #C0614A !important; }
+[data-theme="muji"] .hover\:bg-tattoo-dark:hover  { background-color: #F2EDE5 !important; }
+[data-theme="muji"] .hover\:bg-tattoo-border:hover { background-color: #DDD8CF !important; }
+[data-theme="muji"] .hover\:text-tattoo-gold:hover { color: #6B8C7A !important; }
+[data-theme="muji"] .hover\:text-tattoo-black:hover { color: #FAF8F5 !important; }
+[data-theme="muji"] .hover\:text-tattoo-cream:hover { color: #2C2825 !important; }
+
+/* placeholder 色 */
+[data-theme="muji"] .placeholder-tattoo-warm::placeholder { color: #9A9088 !important; }
+
+/* ── 覆蓋 tattoo.css 中硬編碼 rgba glow 效果 ── */
+[data-theme="muji"] .tattoo-glow {
+  box-shadow: 0 0 8px rgba(107, 140, 122, 0.2);
+}
+[data-theme="muji"] .tattoo-glow-red {
+  box-shadow: 0 0 8px rgba(192, 97, 74, 0.2);
+}
+[data-theme="muji"] .tattoo-btn-primary:not(:disabled):hover {
+  animation: none;
+  box-shadow: 0 0 8px rgba(107, 140, 122, 0.3);
+}
+[data-theme="muji"] .tattoo-table-row:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+[data-theme="muji"] .tattoo-input:focus,
+[data-theme="muji"] .tattoo-select:focus {
+  border-color: var(--tattoo-gold) !important;
+  box-shadow: 0 0 0 1px rgba(107, 140, 122, 0.3);
+}
+[data-theme="muji"] .tattoo-underline::after {
+  background: linear-gradient(to right, transparent, var(--tattoo-gold), transparent);
+}
+[data-theme="muji"] .tattoo-corners::before,
+[data-theme="muji"] .tattoo-corners::after {
+  border-color: var(--tattoo-gold);
+  opacity: 0.4;
+}
+[data-theme="muji"] .tattoo-card-double::before {
+  border-color: var(--tattoo-border);
+}
